@@ -6,16 +6,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Rust 1.82 with Win7 target
+      - name: Install Rust 1.86 with Win7 target
         uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: "1.82.0"
+          toolchain: "1.86.0"
           targets: x86_64-win7-windows-msvc
 
       - name: Bundle Win7 VST3
         run: cargo run -p xtask -- bundle gradient-knob-vst3 --release --target x86_64-win7-windows-msvc
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload
+        uses: actions/upload-artifact@v4
         with:
           name: GradientKnob-Win7-VST3
-          path: target/bundled/**/*.vst3
+          path: |
+            target/bundled/**/*.vst3
+            target/x86_64-win7-windows-msvc/bundled/**/*.vst3
