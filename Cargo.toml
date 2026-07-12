@@ -10,7 +10,23 @@ name = "gradient_knob_vst3"
 [dependencies]
 nih_plug = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "68b3b864" }
 nih_plug_egui = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "68b3b864", features = ["opengl"] }
-egui = "0.27.2"
+egui = "=0.27.2"
+
+# force old versions that do NOT need edition2024
+indexmap = "=2.2.6"
+winnow = "=0.6.18"
+toml_edit = "=0.19.15"
+hashbrown = "=0.14.5"
 
 [workspace]
 members = [".", "xtask"]
+
+[patch.crates-io]
+# same pins for transitive deps
+indexmap = { version = "=2.2.6" }
+winnow = { version = "=0.6.18" }
+toml_edit = { version = "=0.19.15" }
+hashbrown = { version = "=0.14.5" }
+# keep Win7 compatible windows crates, avoid DiscardVirtualMemory
+windows-sys = "=0.52.0"
+windows = "=0.52.0"
