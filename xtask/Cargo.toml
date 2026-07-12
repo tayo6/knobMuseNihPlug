@@ -2,6 +2,9 @@
 name = "xtask"
 version = "0.1.0"
 edition = "2021"
+rust-version = "1.75"
+publish = false
+
 [dependencies]
-anyhow = "1.0"
 nih_plug_xtask = "0.3.1"
+anyhow = "1.0"
