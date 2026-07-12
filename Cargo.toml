@@ -8,17 +8,18 @@ crate-type = ["cdylib"]
 name = "gradient_knob"
 
 [dependencies]
-# key MUST be nih_plug with underscore, not nih-plug
+# IMPORTANT: underscore, not hyphen
 nih_plug = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "__NIH_PLUG_SHA__" }
 nih_plug_egui = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "__NIH_PLUG_SHA__" }
 
-# ceiling pins for Rust 1.77.2 - cargo 1.77 can't parse edition = "2024" or MSRV 1.82 crates
-time = "=0.3.37"
+# ceiling pins for Rust 1.77.2
+time = "=0.3.36"
 zerofrom = "=0.1.5"
 zerovec = "=0.10.4"
 base64ct = "=1.6.0"
 home = "=0.5.9"
-backtrace = "=0.3.75"
+backtrace = "=0.3.73"
+rustc-demangle = "=0.1.24"
 
 [profile.release]
 lto = "thin"
