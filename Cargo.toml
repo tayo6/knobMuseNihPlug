@@ -1,0 +1,25 @@
+[package]
+name = "gradient-knob-vst3"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+description = "Circular Gradient Knob VST3 - Windows 7 compatible"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib"]
+name = "gradient_knob_vst3"
+
+[dependencies]
+nih_plug = { version = "0.3.1", features = ["nih_export"] }
+nih_plug_egui = { version = "0.3.0", features = ["opengl"] } # glow = Win7 safe, avoid wgpu/D3D12
+egui = { version = "0.27.2", default-features = false, features = ["default"] }
+atomic_float = "1.0"
+
+# Force Win7-compatible windows crates
+# winit 0.29 -> windows-sys 0.52, still Win7 compatible
+[patch.crates-io]
+# no patch needed if you stay on egui 0.27.2
+
+[workspace]
+members = [".", "xtask"]
