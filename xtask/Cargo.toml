@@ -2,9 +2,9 @@
 name = "xtask"
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.75"
+rust-version = "1.77"
 publish = false
 
 [dependencies]
-nih_plug_xtask = "0.3.1"
+nih_plug_xtask = { version = "0.4" }
 anyhow = "1.0"
