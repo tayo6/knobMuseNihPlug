@@ -1,45 +1,31 @@
 name: Build VST3 Win7 Compatible
-
-on:
-  push:
-  workflow_dispatch:
-
+on: [push, workflow_dispatch]
 jobs:
   build:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Rust 1.77.2
-        uses: dtolnay/rust-toolchain@master
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: 1.77.2
           targets: x86_64-pc-windows-msvc
-
-      - name: Resolve nih-plug SHA before MSRV bump
+      - name: Resolve nih-plug SHA
         shell: bash
         run: |
+          rm -f Cargo.lock
           git clone --filter=blob:none https://github.com/robbert-vdh/nih-plug.git /tmp/nih-plug
           SHA=$(git -C /tmp/nih-plug log --before="2024-08-18T00:00:00Z" -n1 --format=%H)
           echo "NIH_PLUG_SHA=$SHA" >> $GITHUB_ENV
-          echo "Resolved $SHA"
           sed -i "s/__NIH_PLUG_SHA__/$SHA/g" Cargo.toml
-          cat Cargo.toml
-
-      - name: Build release DLL
+      - name: Build
+        shell: bash
         run: cargo build --release --lib --target x86_64-pc-windows-msvc
-
-      - name: Assemble VST3 bundle manually
+      - name: Bundle
         shell: bash
         run: |
-          DLL="target/x86_64-pc-windows-msvc/release/gradient_knob.dll"
-          BUNDLE="GradientKnob.vst3/Contents/x86_64-win"
-          mkdir -p "$BUNDLE"
-          cp "$DLL" "$BUNDLE/GradientKnob.vst3"
-          # Optional descriptor, DAWs accept bundle without it
-          echo "VST3 bundle created"
-          7z a -tzip GradientKnob-vst3-win64.zip GradientKnob.vst3
-
+          mkdir -p GradientKnob.vst3/Contents/x86_64-win
+          cp target/x86_64-pc-windows-msvc/release/gradient_knob.dll GradientKnob.vst3/Contents/x86_64-win/GradientKnob.vst3
+          7z a GradientKnob-vst3-win64.zip GradientKnob.vst3
       - uses: actions/upload-artifact@v4
         with:
           name: GradientKnob-vst3-win64
