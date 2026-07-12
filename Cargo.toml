@@ -3,18 +3,16 @@ name = "gradient-knob-vst3"
 version = "0.1.0"
 edition = "2021"
 rust-version = "1.77"
-description = "Circular Gradient Knob VST3 - Win7 compatible"
-license = "MIT"
 
 [lib]
 crate-type = ["cdylib"]
 name = "gradient_knob_vst3"
 
 [dependencies]
-# use 0.4 range, not 0.3.1
-nih_plug = { version = "0.4" }
-nih_plug_egui = { version = "0.4", features = ["opengl"] } # opengl = glow, Win7 safe
-egui = { version = "0.28.1" } # 0.28 still uses winit 0.29 -> Win7 OK
+# use git, not crates-io - avoids "no matching package"
+nih_plug = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "68b3b864", features = ["standalone"] }
+nih_plug_egui = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "68b3b864", features = ["opengl"] }
+egui = "0.27.2"
 
 [workspace]
 members = [".", "xtask"]
