@@ -5,21 +5,17 @@ jobs:
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@master
+
+      - name: Install Rust 1.82 with Win7 target
+        uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: "1.77.2"
-          targets: x86_64-pc-windows-msvc
+          toolchain: "1.82.0"
+          targets: x86_64-win7-windows-msvc
 
-      - name: Clean old index / lock
-        run: |
-          Remove-Item Cargo.lock -Force -ErrorAction SilentlyContinue
-          Remove-Item -Recurse -Force $env:CARGO_HOME\registry\cache -ErrorAction SilentlyContinue
-          Remove-Item -Recurse -Force $env:CARGO_HOME\registry\index -ErrorAction SilentlyContinue
-
-      - name: Bundle
-        run: cargo run -p xtask -- bundle gradient-knob-vst3 --release
+      - name: Bundle Win7 VST3
+        run: cargo run -p xtask -- bundle gradient-knob-vst3 --release --target x86_64-win7-windows-msvc
 
       - uses: actions/upload-artifact@v4
         with:
-          name: GradientKnob-VST3
+          name: GradientKnob-Win7-VST3
           path: target/bundled/**/*.vst3
