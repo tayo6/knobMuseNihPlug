@@ -1,26 +1,18 @@
-name: Build VST3 Win7 Compatible
+name: Build VST3 Win7
 on: [push, workflow_dispatch]
-
 jobs:
   build-win:
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Rust 1.75 (last Win7 official)
-        uses: dtolnay/rust-toolchain@master
+      - uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: "1.75.0"
+          toolchain: "1.77.2"
           targets: x86_64-pc-windows-msvc
-
       - uses: Swatinem/rust-cache@v2
-
-      - name: Build and bundle
-        # use `run -p xtask` instead of `cargo xtask`
+      - name: Bundle
         run: cargo run --release -p xtask -- bundle gradient-knob-vst3 --release
-
-      - name: Upload VST3
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: GradientKnob-Win7-VST3
+          name: GradientKnob-VST3
           path: target/bundled/**/*.vst3
