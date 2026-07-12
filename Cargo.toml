@@ -2,14 +2,13 @@
 name = "gradient-knob-vst3"
 version = "0.1.0"
 edition = "2021"
-# remove rust-version = "1.77" so 1.82+ can build
 
 [lib]
 crate-type = ["cdylib"]
 name = "gradient_knob_vst3"
 
 [dependencies]
-nih_plug = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "68b3b864", features = ["standalone"] }
+nih_plug = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "68b3b864" }
 nih_plug_egui = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "68b3b864", features = ["opengl"] }
 egui = "0.27.2"
 
