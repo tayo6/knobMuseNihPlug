@@ -71,11 +71,21 @@ impl Plugin for GradientKnob {
     const URL: &'static str = "";
     const EMAIL: &'static str = "";
     const VERSION: &'static str = env!("CARGO_PKG_VERSION");
-    const AUDIO_IO_LAYOUTS: &'static [AudioIOLayout] = &[AudioIOLayout{
-        main_input_channels: NonZeroU32::new(2),
-        main_output_channels: NonZeroU32::new(2),
-       ..AudioIOLayout::const_default()
+
+        const AUDIO_IO_LAYOUTS: &'static [AudioIOLayout] = &[AudioIOLayout {
+        main_input_channels: unsafe { NonZeroU32::new_unchecked(2) },
+        main_output_channels: unsafe { NonZeroU32::new_unchecked(2) },
+        aux_input_ports: &[],
+        aux_output_ports: &[],
+        names: PortNames {
+            layout: None,
+            main_input_name: None,
+            main_output_name: None,
+            aux_input_names: &[],
+            aux_output_names: &[],
+        },
     }];
+
     const MIDI_INPUT: MidiConfig = MidiConfig::None;
     const SAMPLE_ACCURATE_AUTOMATION: bool = true;
     type SysExMessage = ();
