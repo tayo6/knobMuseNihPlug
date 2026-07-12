@@ -52,9 +52,9 @@ impl Default for GradientParams {
         Self {
             editor_state: EguiState::from_size(380, 580),
             value: FloatParam::new("Value", 50.0, FloatRange::Linear { min: 0.0, max: 100.0 })
-               .with_smoother(SmoothingStyle::Linear(50.0))
-               .with_unit("%")
-               .with_value_to_string(formatters::v2s_f32_percentage(0)),
+              .with_smoother(SmoothingStyle::Linear(50.0))
+              .with_unit("%")
+              .with_value_to_string(formatters::v2s_f32_percentage(0)),
         }
     }
 }
@@ -72,7 +72,7 @@ impl Plugin for GradientKnob {
     const EMAIL: &'static str = "";
     const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
-        const AUDIO_IO_LAYOUTS: &'static [AudioIOLayout] = &[AudioIOLayout {
+    const AUDIO_IO_LAYOUTS: &'static [AudioIOLayout] = &[AudioIOLayout {
         main_input_channels: unsafe { NonZeroU32::new_unchecked(2) },
         main_output_channels: unsafe { NonZeroU32::new_unchecked(2) },
         aux_input_ports: &[],
@@ -107,22 +107,16 @@ impl Plugin for GradientKnob {
             params.clone(),
             move |ctx, setter, params| {
                 egui::CentralPanel::default()
-                   .frame(egui::Frame{ fill: Color32::from_rgb(14,14,18), inner_margin: egui::Margin::symmetric(20.0,20.0),..Default::default() })
-                   .show(ctx, |ui| {
+                  .frame(egui::Frame{ fill: Color32::from_rgb(14,14,18), inner_margin: egui::Margin::symmetric(20.0,20.0),..Default::default() })
+                  .show(ctx, |ui| {
                         let mut st = ui_state_c.lock().unwrap();
-
-                        // sync from host automation when not dragging
                         let host_val = params.value.value();
-                        if!st.dragging && (host_val - st.target).abs() > 0.01 {
-                            st.target = host_val;
-                        }
-
+                        if!st.dragging && (host_val - st.target).abs() > 0.01 { st.target = host_val; }
                         let dt = ctx.input(|i| i.unstable_dt).clamp(0.0, 0.05);
                         let lerp = 1.0 - (-dt * 18.0_f32).exp();
                         st.current += (st.target - st.current) * lerp;
                         if (st.target - st.current).abs() < 0.01 { st.current = st.target; }
 
-                        // keyboard support like original
                         if ctx.input(|i| i.key_pressed(egui::Key::ArrowRight) || i.key_pressed(egui::Key::ArrowUp)) {
                             st.target = (st.target + 2.0).clamp(0.0,100.0);
                             setter.begin_set_parameter(&params.value);
@@ -140,96 +134,69 @@ impl Plugin for GradientKnob {
                             ui.add_space(10.0);
                             ui.label(egui::RichText::new("Circular Gradient Knob").size(18.0).color(Color32::from_gray(200)).strong());
                             ui.add_space(6.0);
-
                             let desired = Vec2::splat(300.0);
                             let (rect, resp) = ui.allocate_exact_size(desired, Sense::click_and_drag());
                             let center = rect.center();
-                            let radius = 92.0_f32;
-                            let sw = 16.0_f32;
-                            let tick_r = 120.0_f32;
-                            let start_rad = START_DEG*PI/180.0;
-                            let end_rad = END_DEG*PI/180.0;
-                            let sweep_rad = SWEEP_DEG*PI/180.0;
-                            let cur_t = st.current/100.0;
-                            let cur_rad = start_rad + cur_t * sweep_rad;
-                            let cur_col = lerp_color(cur_t);
+                            let radius = 92.0_f32; let sw = 16.0_f32; let tick_r = 120.0_f32;
+                            let start_rad = START_DEG*PI/180.0; let end_rad = END_DEG*PI/180.0; let sweep_rad = SWEEP_DEG*PI/180.0;
+                            let cur_t = st.current/100.0; let cur_rad = start_rad + cur_t * sweep_rad; let cur_col = lerp_color(cur_t);
 
                             if resp.dragged() || resp.clicked() {
                                 if let Some(p) = resp.interact_pointer_pos() {
-                                    let v = p - center;
-                                    let mut deg = v.y.atan2(v.x).to_degrees();
-                                    if deg < 0.0 { deg += 360.0; }
+                                    let v = p - center; let mut deg = v.y.atan2(v.x).to_degrees(); if deg < 0.0 { deg += 360.0; }
                                     if!(deg > DEAD_START && deg < DEAD_END) {
                                         let nv = map_deg_to_val(deg).clamp(0.0,100.0);
                                         if (nv - st.target).abs() < 70.0 {
-                                            st.target = nv;
-                                            st.dragging = true;
+                                            st.target = nv; st.dragging = true;
                                             setter.begin_set_parameter(&params.value);
                                             setter.set_parameter(&params.value, nv);
                                             setter.end_set_parameter(&params.value);
                                         }
                                     }
                                 }
-                            } else if!resp.is_pointer_button_down_on() {
-                                st.dragging = false;
-                            }
+                            } else if!resp.is_pointer_button_down_on() { st.dragging = false; }
 
                             let painter = ui.painter_at(rect);
                             painter.circle_filled(center, radius+20.0, Color32::from_rgba_unmultiplied(cur_col.r(),cur_col.g(),cur_col.b(),14));
-
                             for i in 0..=40 {
-                                let t = i as f32/40.0;
-                                let rad = (START_DEG + t*SWEEP_DEG)*PI/180.0;
+                                let t = i as f32/40.0; let rad = (START_DEG + t*SWEEP_DEG)*PI/180.0;
                                 let major = i%10==0; let mid = i%5==0;
                                 let len = if major {16.0} else if mid {11.0} else {7.0};
                                 let w = if major {2.8} else {1.6};
-                                let dist = (t-cur_t).abs();
-                                let scale = if dist<0.10 {1.0+(0.10-dist)/0.10*0.6} else {1.0};
+                                let dist = (t-cur_t).abs(); let scale = if dist<0.10 {1.0+(0.10-dist)/0.10*0.6} else {1.0};
                                 let col = if t <= cur_t+0.001 { lerp_color(t) } else { Color32::from_gray(95) };
-                                let p1 = angle_to_pos(center, tick_r, rad);
-                                let p2 = angle_to_pos(center, tick_r+len*scale, rad);
+                                let p1 = angle_to_pos(center, tick_r, rad); let p2 = angle_to_pos(center, tick_r+len*scale, rad);
                                 rounded_line(&painter, p1, p2, w*scale, col);
                             }
-
                             let grey_col = Color32::from_rgb(48,52,62);
                             let full_pts = arc_points(center, radius, start_rad, end_rad, 64);
                             painter.add(Shape::Path(PathShape{ points: full_pts, closed:false, fill:Color32::TRANSPARENT, stroke:Stroke::new(sw,grey_col)}));
                             painter.circle_filled(angle_to_pos(center,radius,start_rad), sw*0.5, grey_col);
                             painter.circle_filled(angle_to_pos(center,radius,end_rad), sw*0.5, grey_col);
-
                             if cur_t > 0.001 {
                                 let steps = 100;
                                 for s in 0..steps {
-                                    let t0 = s as f32/steps as f32 * cur_t;
-                                    let t1 = (s+1) as f32/steps as f32 * cur_t;
-                                    let a0 = start_rad + t0*sweep_rad;
-                                    let a1 = start_rad + t1*sweep_rad;
-                                    let mid = (t0+t1)*0.5;
+                                    let t0 = s as f32/steps as f32 * cur_t; let t1 = (s+1) as f32/steps as f32 * cur_t;
+                                    let a0 = start_rad + t0*sweep_rad; let a1 = start_rad + t1*sweep_rad; let mid = (t0+t1)*0.5;
                                     painter.line_segment([angle_to_pos(center,radius,a0), angle_to_pos(center,radius,a1)], Stroke::new(sw, lerp_color(mid)));
                                 }
                                 painter.circle_filled(angle_to_pos(center,radius,start_rad), sw*0.5, lerp_color(0.0));
                                 painter.circle_filled(angle_to_pos(center,radius,cur_rad), sw*0.5, cur_col);
                             }
-
                             let knob_pos = angle_to_pos(center, radius, cur_rad);
                             painter.circle_filled(knob_pos, 17.0, Color32::from_black_alpha(90));
                             painter.circle_filled(knob_pos, 13.5, Color32::WHITE);
                             painter.circle_stroke(knob_pos, 13.5, Stroke::new(3.2, cur_col));
                             painter.circle_filled(knob_pos, 3.0, cur_col);
-
                             painter.text(center, Align2::CENTER_CENTER, format!("{:.0}%", st.current), FontId::proportional(40.0), Color32::WHITE);
                             let sub = Pos2::new(center.x, center.y+34.0);
                             painter.text(sub, Align2::CENTER_CENTER, "drag or arrow keys", FontId::proportional(12.0), Color32::from_gray(130));
-
                             ui.add_space(18.0);
                             ui.horizontal(|ui|{
                                 ui.label(egui::RichText::new(format!("Value: {:.0}", st.current)).color(Color32::from_gray(160)));
                                 let (bar_rect, _) = ui.allocate_exact_size(Vec2::new(160.0,6.0), Sense::hover());
-                                let mut fill_rect = bar_rect;
-                                fill_rect.max.x = bar_rect.min.x + bar_rect.width()*cur_t;
-                                let up = ui.painter();
-                                up.rect_filled(bar_rect, 3.0, Color32::from_rgb(36,40,50));
-                                up.rect_filled(fill_rect, 3.0, cur_col);
+                                let mut fill_rect = bar_rect; fill_rect.max.x = bar_rect.min.x + bar_rect.width()*cur_t;
+                                let up = ui.painter(); up.rect_filled(bar_rect, 3.0, Color32::from_rgb(36,40,50)); up.rect_filled(fill_rect, 3.0, cur_col);
                             });
                             ctx.request_repaint();
                         });
@@ -240,10 +207,7 @@ impl Plugin for GradientKnob {
     }
 
     fn process(&mut self, buffer: &mut Buffer, _aux: &mut AuxiliaryBuffers, _ctx: &mut impl ProcessContext<Self>) -> ProcessStatus {
-        // passthrough, this is a utility/visual plugin
-        for channel_samples in buffer.iter_samples() {
-            for _s in channel_samples { }
-        }
+        for _s in buffer.iter_samples() {}
         ProcessStatus::Normal
     }
 }
