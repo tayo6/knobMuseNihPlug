@@ -1,24 +1,32 @@
-name: Build VST3 Win7
-on: [push, workflow_dispatch]
-jobs:
-  build-win:
-    runs-on: windows-2022
-    steps:
-      - uses: actions/checkout@v4
+[package]
+name = "gradient-knob-vst3"
+version = "0.1.0"
+edition = "2021"
 
-      - name: Install Rust 1.77.2 - last Win7 pc-windows-msvc
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: "1.77.2"
+[lib]
+crate-type = ["cdylib"]
+name = "gradient_knob_vst3"
 
-      - name: Clean
-        run: |
-          Remove-Item Cargo.lock -Force -ErrorAction SilentlyContinue
+[dependencies]
+nih_plug = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "68b3b864" }
+nih_plug_egui = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "68b3b864", features = ["opengl"] }
+egui = "=0.27.2"
 
-      - name: Bundle
-        run: cargo run -p xtask -- bundle gradient-knob-vst3 --release
+# Force pre-edition2024 versions
+indexmap = "=2.2.6"
+hashbrown = "=0.14.5"
+winnow = "=0.6.18"
+toml_edit = "=0.19.15"
+toml = "=0.7.8"
+windows-sys = "=0.52.0"
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: GradientKnob-Win7-VST3
-          path: target/bundled/**/*.vst3
+# time 0.3.53 -> edition2024, pin to 0.3.36 which is edition2021
+time = "=0.3.36"
+deranged = "=0.3.11"
+powerfmt = "=0.2.0"
+num-conv = "=0.1.0"
+time-core = "=0.1.2"
+time-macros = "=0.2.18"
+
+[workspace]
+members = [".", "xtask"]
