@@ -8,22 +8,9 @@ crate-type = ["cdylib"]
 name = "gradient_knob_vst3"
 
 [dependencies]
-nih_plug = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "68b3b864" }
-nih_plug_egui = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "68b3b864", features = ["opengl"] }
-egui = "=0.27.2"
-
-# Force pre-edition2024 versions - Cargo will unify these for all transitive deps
-indexmap = "=2.2.6"
-hashbrown = "=0.14.5"
-winnow = "=0.6.18"
-toml_edit = "=0.19.15"
-toml = "=0.7.8"
-# Force Win7 compatible windows-sys, avoid DiscardVirtualMemory
-windows-sys = "=0.52.0"
+nih_plug = "0.4"
+nih_plug_egui = { version = "0.34", features = ["opengl"] }
+egui = "0.34"
 
 [workspace]
 members = [".", "xtask"]
-
-
-
-
