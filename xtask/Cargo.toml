@@ -2,9 +2,8 @@
 name = "xtask"
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.77"
 publish = false
 
 [dependencies]
-nih_plug_xtask = { version = "0.4" }
+nih_plug_xtask = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "68b3b864" }
 anyhow = "1.0"
