@@ -2,19 +2,17 @@
 name = "gradient_knob"
 version = "0.1.0"
 edition = "2021"
-description = "Circular Gradient Knob VST3"
-license = "MIT"
 
 [lib]
 crate-type = ["cdylib"]
 name = "gradient_knob"
 
 [dependencies]
-# __NIH_PLUG_SHA__ will be replaced by CI with the real SHA before 2024-08-18
-nih-plug = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "__NIH_PLUG_SHA__" }
+# key MUST be nih_plug with underscore, not nih-plug
+nih_plug = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "__NIH_PLUG_SHA__" }
 nih_plug_egui = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "__NIH_PLUG_SHA__" }
 
-# ceiling pins for Rust 1.77.2 - cargo ignores them if unused
+# ceiling pins for Rust 1.77.2 - cargo 1.77 can't parse edition = "2024"
 time = "=0.3.37"
 zerofrom = "=0.1.5"
 zerovec = "=0.10.4"
